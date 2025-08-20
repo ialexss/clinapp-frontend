@@ -72,7 +72,7 @@ export const DynamicFormBuilder = ({
 							{field.label}
 						</label>
 						<select
-							className="mt-1 block w-full rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900/60"
+							className="mt-1 block w-full rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 dark:border-gray-700 dark:bg-gray-900/60"
 							{...register(fieldName, {
 								required: field.required,
 							})}
@@ -109,7 +109,7 @@ export const DynamicFormBuilder = ({
 						</label>
 						<input
 							type={field.type}
-							className="mt-1 block w-full rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-700 dark:bg-gray-900/60"
+							className="mt-1 block w-full rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 dark:border-gray-700 dark:bg-gray-900/60"
 							{...register(fieldName, {
 								required: field.required,
 							})}

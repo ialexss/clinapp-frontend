@@ -79,10 +79,10 @@ export function AppSidebar() {
 							asChild
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
-							<div className="!bg-[#122023] rounded-lg p-2 h-12">
+							<div className="!bg-zinc-900  rounded-lg p-2 h-12">
 								<a
 									href="/admin"
-									className="!bg-[#122023] w-full p-2 flex items-center gap-2 rounded-lg hover:bg-[#1a2b2c] transition-colors"
+									className="!bg-zinc-900 w-full p-2 flex items-center gap-2 rounded-lg hover:bg-[#1a2b2c] transition-colors"
 								>
 									<Activity className="!size-5 text-white" />
 									<span className="text-base font-light text-white">
