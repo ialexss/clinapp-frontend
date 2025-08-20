@@ -4,6 +4,7 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminLayout({
 	children,
@@ -19,6 +20,7 @@ export default function AdminLayout({
 					<p>Administración</p>
 				</div>
 				<main className="px-5">{children}</main>
+				<Toaster />
 			</SidebarInset>
 		</SidebarProvider>
 	);
