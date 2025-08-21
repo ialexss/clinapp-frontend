@@ -23,6 +23,7 @@ import {
 	ShoppingBag,
 	Hospital,
 	Activity,
+	CalendarClock,
 } from "lucide-react";
 
 // Menu items.
@@ -66,6 +67,11 @@ const items = [
 		title: "Especialidades",
 		url: "/admin/especialidades",
 		icon: Building,
+	},
+	{
+		title: "Horarios",
+		url: "/admin/horariosmedicos",
+		icon: CalendarClock,
 	},
 ];
 

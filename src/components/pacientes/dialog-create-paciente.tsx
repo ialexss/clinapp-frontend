@@ -13,10 +13,9 @@ import { toast } from "sonner";
 import { DynamicFormBuilder, FormSchema } from "../dynamic-form";
 import { getUsers } from "@/services/usersService";
 import { getRoles } from "@/services/rolesService";
-import { getEspecialidades } from "@/services/especialidadesService";
-import { createMedico } from "@/services/medicosService";
+import { createPaciente } from "@/services/pacientesService";
 
-const DialogCreateMedico = () => {
+const DialogCreatePaciente = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [users, setUsers] = useState<
@@ -26,23 +25,23 @@ const DialogCreateMedico = () => {
 			apellido_paterno?: string | null;
 		}[]
 	>([]);
-	const [especialidades, setEspecialidades] = useState<
-		{ id_especialidad: number; nombre: string }[]
-	>([]);
 
 	const handleSubmit = async (data: any) => {
 		setLoading(true);
 		try {
-			await createMedico({
+			await createPaciente({
 				id_usuario: parseInt(data.id_usuario, 10),
-				id_especialidad: parseInt(data.id_especialidad, 10),
+				ci: data.ci,
+				fecha_nac: data.fecha_nac,
+				sexo: data.sexo,
 				telefono: data.telefono,
 				email: data.email,
+				direccion: data.direccion,
 			});
-			toast.success("Médico creado exitosamente");
+			toast.success("Paciente creado");
 			setIsOpen(false);
-		} catch (error) {
-			toast.error("Error al crear el médico");
+		} catch (err) {
+			toast.error("Error al crear paciente");
 		} finally {
 			setLoading(false);
 		}
@@ -60,15 +59,19 @@ const DialogCreateMedico = () => {
 					value: String(u.id_usuario),
 				})),
 			},
+			{ name: "ci", label: "CI", type: "text", required: false },
 			{
-				name: "id_especialidad",
-				label: "Especialidad",
+				name: "fecha_nac",
+				label: "Fecha de nacimiento",
+				type: "date",
+				required: false,
+			},
+			{
+				name: "sexo",
+				label: "Sexo",
 				type: "select",
-				required: true,
-				options: especialidades.map((e) => ({
-					label: e.nombre,
-					value: String(e.id_especialidad),
-				})),
+				required: false,
+				options: ["Masculino", "Femenino", "Otro"],
 			},
 			{
 				name: "telefono",
@@ -77,6 +80,12 @@ const DialogCreateMedico = () => {
 				required: false,
 			},
 			{ name: "email", label: "Email", type: "email", required: false },
+			{
+				name: "direccion",
+				label: "Dirección",
+				type: "text",
+				required: false,
+			},
 		],
 	};
 
@@ -84,23 +93,20 @@ const DialogCreateMedico = () => {
 		const load = async () => {
 			try {
 				const roles = await getRoles();
-				const medicoRole = roles.find(
-					(r) => r.nombre && r.nombre.toLowerCase() === "medico"
+				const pacienteRole = roles.find(
+					(r) => r.nombre && r.nombre.toLowerCase() === "paciente"
 				);
 				const u = await getUsers();
-				if (medicoRole) {
-					setUsers(u.filter((x: any) => x.id_rol === medicoRole.id));
+				if (pacienteRole) {
+					setUsers(
+						u.filter((x: any) => x.id_rol === pacienteRole.id)
+					);
 				} else {
+					// si no existe el role 'Paciente', fallback: todos
 					setUsers(u);
 				}
 			} catch {
 				setUsers([]);
-			}
-			try {
-				const es = await getEspecialidades();
-				setEspecialidades(es);
-			} catch {
-				setEspecialidades([]);
 			}
 		};
 		if (isOpen) load();
@@ -109,13 +115,13 @@ const DialogCreateMedico = () => {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
-				<Button>Crear médico</Button>
+				<Button>Crear paciente</Button>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Nuevo Médico</DialogTitle>
+					<DialogTitle>Nuevo Paciente</DialogTitle>
 					<DialogDescription>
-						Agrega un nuevo médico al sistema.
+						Añade un paciente al sistema.
 					</DialogDescription>
 				</DialogHeader>
 				<DynamicFormBuilder
@@ -128,4 +134,4 @@ const DialogCreateMedico = () => {
 	);
 };
 
-export default DialogCreateMedico;
+export default DialogCreatePaciente;

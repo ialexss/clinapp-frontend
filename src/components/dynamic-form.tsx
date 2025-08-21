@@ -11,6 +11,7 @@ export type BaseField = {
 		| "number"
 		| "date"
 		| "datetime-local"
+		| "time"
 		| "select"
 		| "password";
 	required?: boolean;
@@ -109,6 +110,7 @@ export const DynamicFormBuilder = ({
 						</label>
 						<input
 							type={field.type}
+							step={field.type === "time" ? "1" : undefined}
 							className="mt-1 block w-full rounded-md border border-gray-300 bg-white/80 px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 dark:border-gray-700 dark:bg-gray-900/60"
 							{...register(fieldName, {
 								required: field.required,
