@@ -71,9 +71,9 @@ export interface Medico {
 // en los attachments. Ajusta según el backend real si hace falta.
 export interface Consulta {
 	id_consulta: number;
-	id_cita?: number | null;
-	id_usuario?: number | null;
-	id_paciente?: number | null;
+	id_cita: number;
+	id_usuario: number; // médico que realiza la consulta
+	id_paciente: number;
 	motivo?: string | null;
 	diagnostico?: string | null;
 	tratamiento?: string | null;
@@ -82,7 +82,7 @@ export interface Consulta {
 	fecha_registro?: string | null;
 	// relaciones
 	cita?: Cita;
-	usuario?: Usuario;
+	medicoUser?: Usuario; // médico que realiza la consulta
 	paciente?: Paciente;
 	analisis?: AnalisisLaboratorio[];
 }
@@ -108,10 +108,11 @@ export interface Cita {
 export interface AnalisisLaboratorio {
 	id_analisis: number;
 	id_consulta: number;
-	tipo?: string | null;
+	tipo: string;
 	resultado?: string | null;
 	observaciones?: string | null;
 	fecha?: string | null;
+	created_at?: string | null;
 	// relacion
 	consulta?: Consulta;
 }

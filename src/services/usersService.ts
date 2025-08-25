@@ -37,6 +37,26 @@ export async function getUsers(): Promise<Usuario[]> {
 	}
 }
 
+/** Obtener solo los usuarios que son pacientes (id_rol = 3) */
+export async function getPacientesUsuarios(): Promise<Usuario[]> {
+	try {
+		const res = await fetch(fullUrl("/api/usuarios/pacientes/list"), {
+			next: { tags: ["usuarios"] },
+		} as any);
+
+		if (!res.ok) {
+			throw new Error(
+				`Error fetch usuarios pacientes: ${res.status} ${res.statusText}`
+			);
+		}
+		return res.json();
+	} catch (err: any) {
+		throw new Error(
+			err?.message || "Error desconocido al obtener usuarios pacientes"
+		);
+	}
+}
+
 /** Obtener un usuario por id */
 export async function getUser(id: number): Promise<Usuario> {
 	try {

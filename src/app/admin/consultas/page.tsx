@@ -1,14 +1,19 @@
-import React from "react";
+import { Suspense } from "react";
+import ConsultasClient from "@/components/consultas/consultas-client";
+import { Stethoscope } from "lucide-react";
 
 const pageConsultas = () => {
 	return (
 		<div className="space-y-6">
-			<div>
-				<h2 className="text-2xl font-bold tracking-tight">Consultas</h2>
-				<p className="text-muted-foreground">
-					Administra las consultas médicas.
-				</p>
-			</div>
+			<Suspense
+				fallback={
+					<div className="flex justify-center items-center h-64">
+						<div className="text-lg">Cargando consultas...</div>
+					</div>
+				}
+			>
+				<ConsultasClient />
+			</Suspense>
 		</div>
 	);
 };

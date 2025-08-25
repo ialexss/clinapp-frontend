@@ -21,10 +21,37 @@ const pageMedicos = async () => {
 				data={medicos}
 				columns={[
 					{ key: "id_medico", label: "ID" },
-					{ key: "id_usuario", label: "Id Usuario" },
-					{ key: "id_especialidad", label: "Id Especialidad" },
+					{
+						key: "nombre_completo",
+						label: "Nombre Completo",
+						render: (row: any) => {
+							const usuario = row.usuario;
+							if (usuario) {
+								const nombreCompleto = [
+									usuario.nombre,
+									usuario.apellido_paterno,
+									usuario.apellido_materno,
+								]
+									.filter(Boolean)
+									.join(" ");
+								return nombreCompleto || "Sin nombre";
+							}
+							return "Sin usuario";
+						},
+					},
+					{
+						key: "especialidad_nombre",
+						label: "Especialidad",
+						render: (row: any) =>
+							row.especialidad?.nombre || "Sin especialidad",
+					},
 					{ key: "telefono", label: "Teléfono" },
-					{ key: "email", label: "Email" },
+					{
+						key: "email_usuario",
+						label: "Email",
+						render: (row: any) =>
+							row.usuario?.email || row.email || "Sin email",
+					},
 					{
 						key: "actions",
 						label: "Acciones",

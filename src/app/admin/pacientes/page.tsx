@@ -21,12 +21,34 @@ const pagePacientes = async () => {
 				data={pacientes}
 				columns={[
 					{ key: "id_paciente", label: "ID" },
-					{ key: "id_usuario", label: "Id Usuario" },
+					{
+						key: "nombre_completo",
+						label: "Nombre Completo",
+						render: (row: any) => {
+							const usuario = row.usuario;
+							if (usuario) {
+								const nombreCompleto = [
+									usuario.nombre,
+									usuario.apellido_paterno,
+									usuario.apellido_materno,
+								]
+									.filter(Boolean)
+									.join(" ");
+								return nombreCompleto || "Sin nombre";
+							}
+							return "Sin usuario";
+						},
+					},
 					{ key: "ci", label: "CI" },
 					{ key: "fecha_nac", label: "Fecha Nac" },
 					{ key: "sexo", label: "Sexo" },
 					{ key: "telefono", label: "Teléfono" },
-					{ key: "email", label: "Email" },
+					{
+						key: "email_usuario",
+						label: "Email",
+						render: (row: any) =>
+							row.usuario?.email || row.email || "Sin email",
+					},
 					{
 						key: "actions",
 						label: "Acciones",

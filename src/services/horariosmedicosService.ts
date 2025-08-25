@@ -119,3 +119,17 @@ export async function deleteHorarioMedico(id: number): Promise<boolean> {
 		);
 	}
 }
+
+// Función adicional para obtener horarios de un médico específico
+export async function getHorariosByMedico(
+	idMedico: number
+): Promise<HorarioMedico[]> {
+	try {
+		const allHorarios = await getHorariosMedicos();
+		return allHorarios.filter((horario) => horario.id_medico === idMedico);
+	} catch (err: any) {
+		throw new Error(
+			err?.message || `Error al obtener horarios del médico ${idMedico}`
+		);
+	}
+}
