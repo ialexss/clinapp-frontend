@@ -43,3 +43,16 @@ Este proyecto es una aplicación web desarrollada con Next.js, pensada como el f
 ## Despliegue
 
 La forma más sencilla de desplegar el proyecto es usando [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme).
+
+## Capturas de pantalla
+
+![Captura 1](./public/capturas/1.png)
+![Captura 2](./public/capturas/2.png)
+![Captura 3](./public/capturas/3.png)
+![Captura 4](./public/capturas/4.png)
+![Captura 5](./public/capturas/5.png)
+![Captura 6](./public/capturas/6.png)
+![Captura 7](./public/capturas/7.png)
+![Captura 8](./public/capturas/8.png)
+
+
