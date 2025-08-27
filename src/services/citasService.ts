@@ -1,7 +1,7 @@
 "use server";
 
 import type { Cita } from "../types";
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 const BASE = (process.env.NEXT_PUBLIC_BACKEND_URL || "").replace(/\/$/, "");
 const jsonHeaders = { "Content-Type": "application/json" };
@@ -59,6 +59,7 @@ export async function createCita(data: Partial<Cita>): Promise<Cita> {
 		const created = await res.json();
 		try {
 			revalidateTag("citas");
+			revalidatePath("/admin/citas");
 		} catch (_) {}
 		return created;
 	} catch (err: any) {

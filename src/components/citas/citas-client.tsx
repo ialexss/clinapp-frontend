@@ -10,43 +10,46 @@ import DialogChangeEstadoCita from "@/components/citas/dialog-change-estado-cita
 import { getCitas } from "@/services/citasService";
 import { toast } from "sonner";
 import type { Cita } from "@/types";
-import { 
-	Calendar, 
-	Clock, 
-	Users, 
-	CheckCircle, 
-	XCircle, 
+import {
+	Calendar,
+	Clock,
+	Users,
+	CheckCircle,
+	XCircle,
 	AlertCircle,
 	UserCheck,
-	CalendarDays
+	CalendarDays,
 } from "lucide-react";
+import { Button } from "../ui/button";
+import Link from "next/link";
 
-const CitasClient = () => {
-	const [citas, setCitas] = useState<Cita[]>([]);
+const CitasClient = ({ citas }: { citas: Cita[] }) => {
 	const [loading, setLoading] = useState(true);
 
-	const loadCitas = async () => {
-		try {
-			setLoading(true);
-			const data = await getCitas();
-			setCitas(data);
-		} catch (error) {
-			toast.error("Error al cargar las citas");
-			console.error(error);
-		} finally {
-			setLoading(false);
-		}
-	};
+	// const loadCitas = async () => {
+	// 	try {
+	// 		setLoading(true);
+	// 		const data = await getCitas();
+	// 		setCitas(data);
+	// 	} catch (error) {
+	// 		toast.error("Error al cargar las citas");
+	// 		console.error(error);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
-	useEffect(() => {
-		loadCitas();
-	}, []);
+	// useEffect(() => {
+	// 	loadCitas();
+	// }, []);
 
 	// Función para obtener el nombre completo del paciente
 	const getPacienteName = (cita: Cita) => {
-		const usuario = cita.usuario;
+		const usuario = cita.paciente_usuario;
 		if (usuario) {
-			return `${usuario.nombre} ${usuario.apellido_paterno || ""} ${usuario.apellido_materno || ""}`.trim();
+			return `${usuario.nombre} ${usuario.apellido_paterno || ""} ${
+				usuario.apellido_materno || ""
+			}`.trim();
 		}
 		return "Sin paciente";
 	};
@@ -55,9 +58,13 @@ const CitasClient = () => {
 	const getMedicoName = (cita: Cita) => {
 		const medico = cita.medico?.usuario;
 		if (medico) {
-			const nombreCompleto = `${medico.nombre} ${medico.apellido_paterno || ""} ${medico.apellido_materno || ""}`.trim();
+			const nombreCompleto = `${medico.nombre} ${
+				medico.apellido_paterno || ""
+			} ${medico.apellido_materno || ""}`.trim();
 			const especialidad = cita.medico?.especialidad?.nombre;
-			return especialidad ? `${nombreCompleto} - ${especialidad}` : nombreCompleto;
+			return especialidad
+				? `${nombreCompleto} - ${especialidad}`
+				: nombreCompleto;
 		}
 		return "Sin médico";
 	};
@@ -79,57 +86,73 @@ const CitasClient = () => {
 	// Calcular estadísticas
 	const estadisticas = {
 		total: citas.length,
-		hoy: citas.filter(c => {
+		hoy: citas.filter((c) => {
 			if (!c.fecha) return false;
 			const fecha = new Date(c.fecha);
 			const hoy = new Date();
 			return fecha.toDateString() === hoy.toDateString();
 		}).length,
-		esteMes: citas.filter(c => {
+		esteMes: citas.filter((c) => {
 			if (!c.fecha) return false;
 			const fecha = new Date(c.fecha);
 			const ahora = new Date();
-			return fecha.getMonth() === ahora.getMonth() && 
-			       fecha.getFullYear() === ahora.getFullYear();
+			return (
+				fecha.getMonth() === ahora.getMonth() &&
+				fecha.getFullYear() === ahora.getFullYear()
+			);
 		}).length,
-		confirmadas: citas.filter(c => c.estado === 'confirmada').length,
-		completadas: citas.filter(c => c.estado === 'completada').length,
-		canceladas: citas.filter(c => c.estado === 'cancelada').length,
-		pendientes: citas.filter(c => c.estado === 'pendiente').length,
-		proximas: citas.filter(c => {
+		confirmadas: citas.filter((c) => c.estado === "confirmada").length,
+		completadas: citas.filter((c) => c.estado === "completada").length,
+		canceladas: citas.filter((c) => c.estado === "cancelada").length,
+		pendientes: citas.filter((c) => c.estado === "pendiente").length,
+		proximas: citas.filter((c) => {
 			if (!c.fecha) return false;
 			const fechaCita = new Date(c.fecha);
 			const ahora = new Date();
 			const manana = new Date();
 			manana.setDate(ahora.getDate() + 7); // próximos 7 días
-			return fechaCita >= ahora && fechaCita <= manana && c.estado !== 'cancelada';
-		}).length
+			return (
+				fechaCita >= ahora &&
+				fechaCita <= manana &&
+				c.estado !== "cancelada"
+			);
+		}).length,
 	};
-
-	if (loading) {
-		return (
-			<div className="flex justify-center items-center h-64">
-				<div className="text-lg">Cargando citas...</div>
-			</div>
-		);
-	}
 
 	return (
 		<div className="space-y-6">
-			{/* Botón de crear nueva cita */}
-			<div className="flex justify-end">
-				<DialogCreateCita />
+			<div className="flex items-center justify-between">
+				<div>
+					<h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+						<Calendar className="w-6 h-6 text-blue-600" />
+						Gestionar Citas
+					</h2>
+					<p className="text-muted-foreground">
+						Administra las citas médicas del sistema con
+						estadísticas completas.
+					</p>
+				</div>
+				<div className="flex justify-end gap-2">
+					<Button className="bg-blue-900" asChild>
+						<Link href="/reportes/citas">Ver Reporte</Link>
+					</Button>
+					<DialogCreateCita />
+				</div>
 			</div>
 
 			{/* Estadísticas */}
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Total Citas</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Total Citas
+						</CardTitle>
 						<Calendar className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{estadisticas.total}</div>
+						<div className="text-2xl font-bold">
+							{estadisticas.total}
+						</div>
 						<p className="text-xs text-muted-foreground">
 							Todas las citas registradas
 						</p>
@@ -138,11 +161,15 @@ const CitasClient = () => {
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Citas Hoy</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Citas Hoy
+						</CardTitle>
 						<CalendarDays className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{estadisticas.hoy}</div>
+						<div className="text-2xl font-bold">
+							{estadisticas.hoy}
+						</div>
 						<p className="text-xs text-muted-foreground">
 							Citas programadas para hoy
 						</p>
@@ -151,11 +178,15 @@ const CitasClient = () => {
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Este Mes</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Este Mes
+						</CardTitle>
 						<Clock className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{estadisticas.esteMes}</div>
+						<div className="text-2xl font-bold">
+							{estadisticas.esteMes}
+						</div>
 						<p className="text-xs text-muted-foreground">
 							Citas del mes actual
 						</p>
@@ -164,11 +195,15 @@ const CitasClient = () => {
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Próximas (7 días)</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Próximas (7 días)
+						</CardTitle>
 						<AlertCircle className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{estadisticas.proximas}</div>
+						<div className="text-2xl font-bold">
+							{estadisticas.proximas}
+						</div>
 						<p className="text-xs text-muted-foreground">
 							Citas próximas confirmadas
 						</p>
@@ -180,41 +215,57 @@ const CitasClient = () => {
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Confirmadas</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Confirmadas
+						</CardTitle>
 						<CheckCircle className="h-4 w-4 text-green-600" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-green-600">{estadisticas.confirmadas}</div>
+						<div className="text-2xl font-bold text-green-600">
+							{estadisticas.confirmadas}
+						</div>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Completadas</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Completadas
+						</CardTitle>
 						<UserCheck className="h-4 w-4 text-blue-600" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-blue-600">{estadisticas.completadas}</div>
+						<div className="text-2xl font-bold text-blue-600">
+							{estadisticas.completadas}
+						</div>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Pendientes</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Pendientes
+						</CardTitle>
 						<Clock className="h-4 w-4 text-yellow-600" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-yellow-600">{estadisticas.pendientes}</div>
+						<div className="text-2xl font-bold text-yellow-600">
+							{estadisticas.pendientes}
+						</div>
 					</CardContent>
 				</Card>
 
 				<Card>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-						<CardTitle className="text-sm font-medium">Canceladas</CardTitle>
+						<CardTitle className="text-sm font-medium">
+							Canceladas
+						</CardTitle>
 						<XCircle className="h-4 w-4 text-red-600" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-red-600">{estadisticas.canceladas}</div>
+						<div className="text-2xl font-bold text-red-600">
+							{estadisticas.canceladas}
+						</div>
 					</CardContent>
 				</Card>
 			</div>
@@ -222,7 +273,7 @@ const CitasClient = () => {
 			{/* Tabla de citas */}
 			<Card>
 				<CardHeader>
-					<CardTitle>Gestionar Citas Médicas</CardTitle>
+					<CardTitle>Citas Médicas</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<DynamicTable
@@ -239,8 +290,8 @@ const CitasClient = () => {
 								label: "Médico",
 								render: (row: any) => getMedicoName(row),
 							},
-							{ 
-								key: "fecha", 
+							{
+								key: "fecha",
 								label: "Fecha",
 								render: (row: any) => formatDate(row.fecha),
 							},
@@ -260,7 +311,10 @@ const CitasClient = () => {
 								render: (row: any) => {
 									const estado = row.estado || "pendiente";
 									const estadoMap: {
-										[key: string]: { label: string; color: string };
+										[key: string]: {
+											label: string;
+											color: string;
+										};
 									} = {
 										pendiente: {
 											label: "Pendiente",
@@ -300,8 +354,8 @@ const CitasClient = () => {
 									);
 								},
 							},
-							{ 
-								key: "motivo", 
+							{
+								key: "motivo",
 								label: "Motivo",
 								render: (row: any) => {
 									if (row.motivo) {
@@ -311,13 +365,18 @@ const CitasClient = () => {
 											</span>
 										);
 									}
-									return <span className="text-gray-400">Sin motivo</span>;
+									return (
+										<span className="text-gray-400">
+											Sin motivo
+										</span>
+									);
 								},
 							},
-							{ 
-								key: "consultorio", 
+							{
+								key: "consultorio",
 								label: "Consultorio",
-								render: (row: any) => row.consultorio || "No asignado",
+								render: (row: any) =>
+									row.consultorio || "No asignado",
 							},
 							{
 								key: "actions",
@@ -325,15 +384,9 @@ const CitasClient = () => {
 								visible: true,
 								render: (row: any) => (
 									<div className="flex gap-2">
-										<DialogChangeEstadoCita 
-											cita={row} 
-										/>
-										<DialogEditCita 
-											cita={row} 
-										/>
-										<DialogDeleteCita 
-											cita={row} 
-										/>
+										<DialogChangeEstadoCita cita={row} />
+										<DialogEditCita cita={row} />
+										<DialogDeleteCita cita={row} />
 									</div>
 								),
 							},

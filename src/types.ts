@@ -101,6 +101,7 @@ export interface Cita {
 	created_at?: string | null;
 	// relaciones
 	usuario?: Usuario;
+	paciente_usuario?: Usuario;
 	medico?: Medico;
 	consulta?: Consulta;
 }
