@@ -28,6 +28,7 @@ import { getCitas } from "@/services/citasService";
 import { getPacientesUsuarios } from "@/services/usersService";
 import { getPacientes } from "@/services/pacientesService";
 import { getMedicos } from "@/services/medicosService";
+import { TIPOS_ANALISIS, CATEGORIAS_ANALISIS } from "@/data/tiposAnalisis";
 import type {
 	Consulta,
 	Cita,
@@ -111,12 +112,11 @@ const DialogCreateConsulta = ({
 					setValue("id_paciente", pacienteCompleto.id_paciente);
 				}
 
-				if (cita.id_medico) {
-					setValue(
-						"id_usuario",
-						cita.medico?.usuario?.id_usuario || 0
-					); // médico
+				// Establecer automáticamente el médico de la cita seleccionada
+				if (cita.id_medico && cita.medico?.usuario?.id_usuario) {
+					setValue("id_usuario", cita.medico.usuario.id_usuario);
 				}
+
 				setValue("motivo", cita.motivo || "");
 			}
 		}
@@ -229,6 +229,7 @@ const DialogCreateConsulta = ({
 						<div className="space-y-1">
 							<Label htmlFor="id_cita">Cita Médica *</Label>
 							<Select
+								value={watch("id_cita")?.toString() || ""}
 								onValueChange={(value) =>
 									setValue("id_cita", Number(value))
 								}
@@ -257,6 +258,7 @@ const DialogCreateConsulta = ({
 						<div className="space-y-1">
 							<Label htmlFor="id_usuario">Médico *</Label>
 							<Select
+								value={watch("id_usuario")?.toString() || ""}
 								onValueChange={(value) =>
 									setValue("id_usuario", Number(value))
 								}
@@ -418,20 +420,110 @@ const DialogCreateConsulta = ({
 												<Trash2 className="w-4 h-4" />
 											</Button>
 										</div>
-										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										<div className="space-y-4">
 											<div>
 												<Label
 													htmlFor={`analisis.${index}.tipo`}
 												>
 													Tipo de Análisis *
 												</Label>
-												<Input
-													{...register(
-														`analisis.${index}.tipo`,
-														{ required: true }
-													)}
-													placeholder="Ej: Análisis de sangre, Orina, etc."
-												/>
+												<Select
+													onValueChange={(value) => {
+														if (
+															value === "custom"
+														) {
+															// No hacer nada, permitir que el usuario escriba en el input
+															return;
+														}
+														const selectedAnalysis =
+															TIPOS_ANALISIS.find(
+																(t) =>
+																	t.id ===
+																	value
+															);
+														setValue(
+															`analisis.${index}.tipo`,
+															selectedAnalysis?.nombre ||
+																value
+														);
+													}}
+												>
+													<SelectTrigger>
+														<SelectValue placeholder="Selecciona un tipo de análisis" />
+													</SelectTrigger>
+													<SelectContent>
+														{CATEGORIAS_ANALISIS.map(
+															(categoria) => (
+																<div
+																	key={
+																		categoria
+																	}
+																>
+																	<div className="px-2 py-1 text-sm font-medium text-gray-500 bg-gray-100">
+																		{
+																			categoria
+																		}
+																	</div>
+																	{TIPOS_ANALISIS.filter(
+																		(
+																			tipo
+																		) =>
+																			tipo.categoria ===
+																			categoria
+																	).map(
+																		(
+																			tipo
+																		) => (
+																			<SelectItem
+																				key={
+																					tipo.id
+																				}
+																				value={
+																					tipo.id
+																				}
+																				className="pl-4"
+																			>
+																				<div className="p-2">
+																					<div className="font-medium">
+																						{
+																							tipo.nombre
+																						}
+																					</div>
+																					{tipo.descripcion && (
+																						<div className="text-sm text-gray-500">
+																							{
+																								tipo.descripcion
+																							}
+																						</div>
+																					)}
+																				</div>
+																			</SelectItem>
+																		)
+																	)}
+																</div>
+															)
+														)}
+														<div className="border-t border-gray-200 mt-2 pt-2">
+															<SelectItem
+																value="custom"
+																className="font-medium"
+															>
+																💡 Escribir tipo
+																personalizado
+															</SelectItem>
+														</div>
+													</SelectContent>
+												</Select>
+												<div className="mt-2">
+													<Input
+														{...register(
+															`analisis.${index}.tipo`,
+															{ required: true }
+														)}
+														placeholder="O escribe un tipo personalizado..."
+														className="text-sm"
+													/>
+												</div>
 												{errors.analisis?.[index]
 													?.tipo && (
 													<p className="text-red-500 text-sm mt-1">
@@ -452,7 +544,7 @@ const DialogCreateConsulta = ({
 													)}
 												/>
 											</div>
-											<div className="md:col-span-2">
+											<div>
 												<Label
 													htmlFor={`analisis.${index}.resultado`}
 												>
@@ -466,7 +558,7 @@ const DialogCreateConsulta = ({
 													rows={2}
 												/>
 											</div>
-											<div className="md:col-span-2">
+											<div>
 												<Label
 													htmlFor={`analisis.${index}.observaciones`}
 												>

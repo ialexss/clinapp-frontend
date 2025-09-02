@@ -22,6 +22,12 @@ import {
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import {
+	formatDateString,
+	isToday,
+	isThisMonth,
+	isInNextDays,
+} from "@/utils/dateUtils";
 
 const CitasClient = ({ citas }: { citas: Cita[] }) => {
 	const [loading, setLoading] = useState(true);
@@ -70,53 +76,21 @@ const CitasClient = ({ citas }: { citas: Cita[] }) => {
 	};
 
 	// Función para formatear fecha
-	const formatDate = (dateString?: string | null) => {
-		if (!dateString) return "No registrada";
-		try {
-			return new Date(dateString).toLocaleDateString("es-ES", {
-				day: "2-digit",
-				month: "2-digit",
-				year: "numeric",
-			});
-		} catch {
-			return "Fecha inválida";
-		}
-	};
+	const formatDate = formatDateString;
 
 	// Calcular estadísticas
 	const estadisticas = {
 		total: citas.length,
-		hoy: citas.filter((c) => {
-			if (!c.fecha) return false;
-			const fecha = new Date(c.fecha);
-			const hoy = new Date();
-			return fecha.toDateString() === hoy.toDateString();
-		}).length,
-		esteMes: citas.filter((c) => {
-			if (!c.fecha) return false;
-			const fecha = new Date(c.fecha);
-			const ahora = new Date();
-			return (
-				fecha.getMonth() === ahora.getMonth() &&
-				fecha.getFullYear() === ahora.getFullYear()
-			);
-		}).length,
+		hoy: citas.filter((c) => c.fecha && isToday(c.fecha)).length,
+		esteMes: citas.filter((c) => c.fecha && isThisMonth(c.fecha)).length,
 		confirmadas: citas.filter((c) => c.estado === "confirmada").length,
 		completadas: citas.filter((c) => c.estado === "completada").length,
 		canceladas: citas.filter((c) => c.estado === "cancelada").length,
 		pendientes: citas.filter((c) => c.estado === "pendiente").length,
-		proximas: citas.filter((c) => {
-			if (!c.fecha) return false;
-			const fechaCita = new Date(c.fecha);
-			const ahora = new Date();
-			const manana = new Date();
-			manana.setDate(ahora.getDate() + 7); // próximos 7 días
-			return (
-				fechaCita >= ahora &&
-				fechaCita <= manana &&
-				c.estado !== "cancelada"
-			);
-		}).length,
+		proximas: citas.filter(
+			(c) =>
+				c.fecha && isInNextDays(c.fecha, 7) && c.estado !== "cancelada"
+		).length,
 	};
 
 	return (

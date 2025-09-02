@@ -21,7 +21,7 @@ import {
 	getCitasEstadisticas,
 	type DashboardStats,
 	type SystemStatus,
-} from "@/services/dashboardClientService";
+} from "@/services/dashboardService";
 import { Button } from "@/components/ui/button";
 
 const pageHomeAdmin = () => {
@@ -51,14 +51,10 @@ const pageHomeAdmin = () => {
 
 	const fetchAllData = async () => {
 		try {
-			console.log("Fetching dashboard data...");
 			const [dashboardData, statusData] = await Promise.all([
 				getDashboardStats(),
 				getSystemStatus(),
 			]);
-
-			console.log("Dashboard data received:", dashboardData);
-			console.log("Status data received:", statusData);
 
 			setStats(dashboardData);
 			setSystemStatus(statusData);

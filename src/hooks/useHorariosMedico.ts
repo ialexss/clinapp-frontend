@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getHorariosByMedico } from "@/services/horariosmedicosService";
 import type { HorarioMedico } from "@/types";
 import { toast } from "sonner";
+import { getDayOfWeekFromDateString } from "@/utils/dateUtils";
 
 export const useHorariosMedico = (medicoId: number | null) => {
 	const [horarios, setHorarios] = useState<HorarioMedico[]>([]);
@@ -38,10 +39,8 @@ export const useHorariosMedico = (medicoId: number | null) => {
 			return { valid: false, message: "Fecha y horas son requeridas" };
 		}
 
-		const fechaSeleccionada = new Date(fecha);
-		const diaSemana = fechaSeleccionada.toLocaleDateString("es-ES", {
-			weekday: "long",
-		});
+		// Usar la utilidad para obtener el día de la semana correctamente
+		const diaSemana = getDayOfWeekFromDateString(fecha);
 		const diaCapitalizado =
 			diaSemana.charAt(0).toUpperCase() + diaSemana.slice(1);
 
